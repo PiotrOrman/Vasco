@@ -1,0 +1,85 @@
+read_registers:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: vasco
+    address:
+      required: true
+      example: 41000
+      selector:
+        number:
+          min: 0
+          max: 65535
+          mode: box
+    count:
+      default: 1
+      selector:
+        number:
+          min: 1
+          max: 125
+          mode: box
+    device_id:
+      example: 2
+      selector:
+        number:
+          min: 1
+          max: 247
+          mode: box
+
+scan_registers:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: vasco
+    start:
+      required: true
+      example: 41000
+      selector:
+        number:
+          min: 0
+          max: 65535
+          mode: box
+    end:
+      required: true
+      example: 41030
+      selector:
+        number:
+          min: 0
+          max: 65535
+          mode: box
+    device_id:
+      example: 2
+      selector:
+        number:
+          min: 1
+          max: 247
+          mode: box
+
+write_registers:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: vasco
+    address:
+      required: true
+      example: 42008
+      selector:
+        number:
+          min: 0
+          max: 65535
+          mode: box
+    values:
+      required: true
+      example: "[0, 16816]"
+      selector:
+        object:
+    device_id:
+      example: 2
+      selector:
+        number:
+          min: 1
+          max: 247
+          mode: box

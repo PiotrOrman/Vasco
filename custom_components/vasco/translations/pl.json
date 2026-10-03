@@ -1,0 +1,229 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Rekuperator Vasco (Airios BRDG-02EM23)",
+        "description": "Adres IP mostka Ethernet BRDG-02EM23. Mostek przyjmuje tylko jednego klienta Modbus TCP: najpierw zamknij aplikację Vasco i skrypty.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Modbus unit id rekuperatora"
+        },
+        "data_description": {
+          "host": "Adres IP mostka",
+          "unit_id": "2 dla pierwszego sparowanego urządzenia (sam mostek to 1)"
+        }
+      },
+      "reconfigure": {
+        "title": "Zmień adres mostka",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Modbus unit id rekuperatora"
+        },
+        "data_description": {
+          "host": "Adres IP mostka",
+          "unit_id": "2 dla pierwszego sparowanego urządzenia (sam mostek to 1)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Brak połączenia. Czy mostek działa i czy żaden inny klient nie zajmuje jego jedynego slotu TCP?",
+      "unexpected_response": "Mostek odpowiada, ale nie tym, czego się spodziewano. Sprawdź unit id.",
+      "unsupported_device": "To nie jest sterownik VMD-17RPS01 (inny product id)."
+    },
+    "abort": {
+      "already_configured": "Ten rekuperator jest już skonfigurowany.",
+      "reconfigure_successful": "Zmieniono konfigurację.",
+      "wrong_device": "To inny rekuperator (inny adres RF)."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje",
+        "data": {
+          "scan_interval": "Interwał odpytywania (s)",
+          "allow_config_writes": "Pozwól na zapis ustawień (42xxx) i surowych rejestrów"
+        },
+        "data_description": {
+          "allow_config_writes": "Domyślnie wyłączone. Bieg wentylatora można zmieniać zawsze."
+        }
+      }
+    }
+  },
+  "entity": {
+    "fan": {
+      "ventilation": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "low": "Niski",
+              "medium": "Średni",
+              "high": "Wysoki"
+            }
+          }
+        }
+      }
+    },
+    "sensor": {
+      "temp_outdoor": {
+        "name": "Temperatura zewnętrzna"
+      },
+      "temp_supply": {
+        "name": "Temperatura nawiewu"
+      },
+      "temp_extract": {
+        "name": "Temperatura wyciągu"
+      },
+      "temp_exhaust": {
+        "name": "Temperatura wyrzutu"
+      },
+      "fan_supply": {
+        "name": "Wentylator nawiewu"
+      },
+      "fan_extract": {
+        "name": "Wentylator wyciągu"
+      },
+      "efficiency": {
+        "name": "Sprawność odzysku"
+      },
+      "speed_code": {
+        "name": "Kod biegu (surowy)"
+      },
+      "rssi": {
+        "name": "Sygnał RF"
+      },
+      "raw_register": {
+        "name": "Rejestr {address}"
+      },
+      "raw_float": {
+        "name": "Rejestr {address} (float)"
+      }
+    },
+    "binary_sensor": {
+      "bypass": {
+        "name": "Bypass"
+      },
+      "connection": {
+        "name": "Połączenie z mostkiem"
+      }
+    },
+    "button": {
+      "release_connection": {
+        "name": "Zwolnij połączenie na 5 min"
+      },
+      "resume_connection": {
+        "name": "Połącz teraz"
+      }
+    },
+    "number": {
+      "low_supply": {
+        "name": "Niski: nawiew"
+      },
+      "low_extract": {
+        "name": "Niski: wyciąg"
+      },
+      "mid_supply": {
+        "name": "Średni: nawiew"
+      },
+      "mid_extract": {
+        "name": "Średni: wyciąg"
+      },
+      "high_a": {
+        "name": "Wysoki: przepływ A"
+      },
+      "high_b": {
+        "name": "Wysoki: przepływ B"
+      },
+      "bypass_threshold": {
+        "name": "Próg bypassu (dom)"
+      },
+      "preheater_activation": {
+        "name": "Załączenie pre-heatera (zewn.)"
+      },
+      "min_supply_temp": {
+        "name": "Minimalna temperatura nawiewu"
+      }
+    }
+  },
+  "exceptions": {
+    "entry_not_found": {
+      "message": "Nie znaleziono (jednego) załadowanego wpisu Vasco; podaj config_entry_id."
+    },
+    "writes_disabled": {
+      "message": "Zapis jest wyłączony. Włącz go w opcjach integracji."
+    },
+    "bad_scan_range": {
+      "message": "Zły zakres: koniec musi być ≥ początku, maksymalnie {max} rejestrów."
+    }
+  },
+  "services": {
+    "read_registers": {
+      "name": "Odczytaj rejestry",
+      "description": "Czyta rejestry holding przez połączenie integracji. Zwraca wartości.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Wpis",
+          "description": "Potrzebne tylko przy więcej niż jednym rekuperatorze."
+        },
+        "address": {
+          "name": "Adres",
+          "description": "Pierwszy rejestr, dosłownie (np. 41000)."
+        },
+        "count": {
+          "name": "Liczba",
+          "description": "Liczba rejestrów (1–125)."
+        },
+        "device_id": {
+          "name": "Modbus unit id",
+          "description": "Domyślnie skonfigurowany (2). 1 = mostek."
+        }
+      }
+    },
+    "scan_registers": {
+      "name": "Skanuj rejestry",
+      "description": "Czyta zakres po jednym rejestrze; nieistniejące pomija. Porównuje z poprzednim skanem tego samego zakresu i zwraca zmiany (np. wokół resetu filtra).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Wpis",
+          "description": "Potrzebne tylko przy więcej niż jednym rekuperatorze."
+        },
+        "start": {
+          "name": "Początek",
+          "description": "Pierwszy rejestr."
+        },
+        "end": {
+          "name": "Koniec",
+          "description": "Ostatni rejestr (max 200 na skan)."
+        },
+        "device_id": {
+          "name": "Modbus unit id",
+          "description": "Domyślnie skonfigurowany (2). 1 = mostek."
+        }
+      }
+    },
+    "write_registers": {
+      "name": "Zapisz rejestry",
+      "description": "Zapisuje surowe wartości przez FC16. Tylko przy włączonym zapisie w opcjach. Ostrożnie.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Wpis",
+          "description": "Potrzebne tylko przy więcej niż jednym rekuperatorze."
+        },
+        "address": {
+          "name": "Adres",
+          "description": "Pierwszy rejestr, dosłownie (np. 41000)."
+        },
+        "values": {
+          "name": "Wartości",
+          "description": "Lista wartości 16-bit, np. [0, 16816]. Floaty: najpierw młodsze słowo."
+        },
+        "device_id": {
+          "name": "Modbus unit id",
+          "description": "Domyślnie skonfigurowany (2). 1 = mostek."
+        }
+      }
+    }
+  }
+}

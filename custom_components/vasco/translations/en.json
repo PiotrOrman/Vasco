@@ -1,0 +1,229 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Vasco recuperator (Airios BRDG-02EM23)",
+        "description": "IP address of the BRDG-02EM23 Ethernet bridge. The bridge accepts a single Modbus TCP client: close the Vasco app and any scripts first.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Modbus unit id of the recuperator"
+        },
+        "data_description": {
+          "host": "Bridge IP address",
+          "unit_id": "2 for the first bound unit (the bridge itself is 1)"
+        }
+      },
+      "reconfigure": {
+        "title": "Change bridge address",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Modbus unit id of the recuperator"
+        },
+        "data_description": {
+          "host": "Bridge IP address",
+          "unit_id": "2 for the first bound unit (the bridge itself is 1)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect. Is the bridge on, and is no other client holding its single TCP slot?",
+      "unexpected_response": "The bridge answered, but not with the expected data. Check the unit id.",
+      "unsupported_device": "This is not a VMD-17RPS01 controller (product id differs)."
+    },
+    "abort": {
+      "already_configured": "This recuperator is already configured.",
+      "reconfigure_successful": "Reconfigured.",
+      "wrong_device": "This is a different recuperator (RF address differs)."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Polling interval (s)",
+          "allow_config_writes": "Allow writing configuration (42xxx) and raw registers"
+        },
+        "data_description": {
+          "allow_config_writes": "Off by default. The fan speed can always be set."
+        }
+      }
+    }
+  },
+  "entity": {
+    "fan": {
+      "ventilation": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "low": "Low",
+              "medium": "Medium",
+              "high": "High"
+            }
+          }
+        }
+      }
+    },
+    "sensor": {
+      "temp_outdoor": {
+        "name": "Outdoor temperature"
+      },
+      "temp_supply": {
+        "name": "Supply temperature"
+      },
+      "temp_extract": {
+        "name": "Extract temperature"
+      },
+      "temp_exhaust": {
+        "name": "Exhaust temperature"
+      },
+      "fan_supply": {
+        "name": "Supply fan"
+      },
+      "fan_extract": {
+        "name": "Extract fan"
+      },
+      "efficiency": {
+        "name": "Heat recovery efficiency"
+      },
+      "speed_code": {
+        "name": "Speed code (raw)"
+      },
+      "rssi": {
+        "name": "RF signal"
+      },
+      "raw_register": {
+        "name": "Register {address}"
+      },
+      "raw_float": {
+        "name": "Register {address} (float)"
+      }
+    },
+    "binary_sensor": {
+      "bypass": {
+        "name": "Bypass"
+      },
+      "connection": {
+        "name": "Bridge connection"
+      }
+    },
+    "button": {
+      "release_connection": {
+        "name": "Release connection for 5 min"
+      },
+      "resume_connection": {
+        "name": "Reconnect now"
+      }
+    },
+    "number": {
+      "low_supply": {
+        "name": "Low: supply"
+      },
+      "low_extract": {
+        "name": "Low: extract"
+      },
+      "mid_supply": {
+        "name": "Medium: supply"
+      },
+      "mid_extract": {
+        "name": "Medium: extract"
+      },
+      "high_a": {
+        "name": "High: airflow A"
+      },
+      "high_b": {
+        "name": "High: airflow B"
+      },
+      "bypass_threshold": {
+        "name": "Bypass threshold (room)"
+      },
+      "preheater_activation": {
+        "name": "Pre-heater activation (outdoor)"
+      },
+      "min_supply_temp": {
+        "name": "Minimum supply temperature"
+      }
+    }
+  },
+  "exceptions": {
+    "entry_not_found": {
+      "message": "No (single) loaded Vasco entry found; pass config_entry_id."
+    },
+    "writes_disabled": {
+      "message": "Writes are disabled. Enable them in the integration options."
+    },
+    "bad_scan_range": {
+      "message": "Invalid range: end must be ≥ start and at most {max} registers."
+    }
+  },
+  "services": {
+    "read_registers": {
+      "name": "Read registers",
+      "description": "Reads holding registers through the integration's connection. Returns the values.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Entry",
+          "description": "Only needed with more than one recuperator."
+        },
+        "address": {
+          "name": "Address",
+          "description": "First register, literal (e.g. 41000)."
+        },
+        "count": {
+          "name": "Count",
+          "description": "Number of registers (1–125)."
+        },
+        "device_id": {
+          "name": "Modbus unit id",
+          "description": "Defaults to the configured unit (2). 1 = the bridge."
+        }
+      }
+    },
+    "scan_registers": {
+      "name": "Scan registers",
+      "description": "Reads a range one register at a time; absent registers are skipped. Compares with the previous scan of the same range and returns what changed (e.g. around a filter reset).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Entry",
+          "description": "Only needed with more than one recuperator."
+        },
+        "start": {
+          "name": "Start",
+          "description": "First register."
+        },
+        "end": {
+          "name": "End",
+          "description": "Last register (max 200 per scan)."
+        },
+        "device_id": {
+          "name": "Modbus unit id",
+          "description": "Defaults to the configured unit (2). 1 = the bridge."
+        }
+      }
+    },
+    "write_registers": {
+      "name": "Write registers",
+      "description": "Writes raw values with FC16. Only when writes are enabled in the options. Use with care.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Entry",
+          "description": "Only needed with more than one recuperator."
+        },
+        "address": {
+          "name": "Address",
+          "description": "First register, literal (e.g. 41000)."
+        },
+        "values": {
+          "name": "Values",
+          "description": "List of 16-bit values, e.g. [0, 16816]. Floats: low word first."
+        },
+        "device_id": {
+          "name": "Modbus unit id",
+          "description": "Defaults to the configured unit (2). 1 = the bridge."
+        }
+      }
+    }
+  }
+}

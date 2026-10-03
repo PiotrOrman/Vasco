@@ -1,0 +1,5 @@
+{
+  "name": "Vasco (Airios Modbus TCP)",
+  "homeassistant": "2025.2.0",
+  "render_readme": true
+}
